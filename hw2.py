@@ -73,50 +73,48 @@ def get_visited(adj_ls, node):
 
 
 
-#linked list object that's just for implementing the queue
-class LL_node:
+
+class queue():                  #queue only for the purpose of implementing BFS
+    def __init__(self):
+        self.head = None
+        self.tail = None
+    
+    def enqueue(self, item):
+        new_item = LL_node(item)
+        if self.head == None:
+            self.head = new_item
+            self.tail = new_item
+        else:
+            self.tail.attach(new_item)
+            self.tail = new_item
+    
+    def dequeue(self):
+        if self.head == None:
+            return None
+        else:
+            ret = self.head.val
+            new_head = self.head.give_next()
+            self.head.detach()
+            self.head = new_head
+            return ret
+    
+    def is_empty(self):
+        if self.head == None:
+            return True
+        else:
+            return False
+
+class LL_node():                 #node only for the purpose of implementing the queue class
     def __init__(self, val):
-        self.value = val
+        self.val = val
         self.next = None
-
-    def append(self, new):
-        new_node = LL_node(new)
-        self.next = new_node
-        return new_node
-
+        
     def detach(self):
         self.next = None
-
-    def giveNext(self):
+    
+    def give_next(self):
         return self.next
-
-#queue for implementation of BFS
-class queue:
-    def __init__(self):
-        self.front = None
-        self.back = None
-
-    def enqueue(self, new):
-        if self.front == None:
-            new_node = LL_node(new)
-            self.front = new_node
-            self.back = new_node
-        else:
-            new_node = self.back.append(new)
-            self.back = new_node
-
-    def dequeue(self):
-        if self.front == None:
-            #print("Warning! Tried to dequeue but there was nothing in the queue!")
-            return None
-        elif self.front == self.back:
-            popped = self.front
-            self.front = None
-            self.back = None
-            return popped
-        else:
-            popped = self.front
-            self.front = popped.giveNext()
-            popped.detach()
-            return popped
+    
+    def attach(self, next_node):
+        self.next = next_node
             
