@@ -45,13 +45,35 @@ BA_nodes, BA_edges = lab2.barabasi_albert(1500,4,2)
 
 
 
-def BFS(nodes, edges):
-    
+def make_adj_ls(nodes, edges):
+    """
+    makes an adjacency list from a list of nodes and a list of edges. The adj list is represented as a dictionary whose keys are nodes and whose values are ordered lists.
+    the first entry of the list contains a list of neighboring nodes. the second entry of the list contains a boolean that indicates whether the node has been visited with BFS.
+    this adj_ls will only be accessed using the following two accession functions.
+    """
+    adj_ls = {}
+    for n in nodes:
+        adj_ls[n] = [[],False]
+
+    for e in edges:
+        adj_ls[e[0]][0].append(e[1])
+        adj_ls[e[1]][0].append(e[0])     #lists the nodes in each edge as adjacent to each other
+
+    return adj_ls
+
+
+def get_neighbors(adj_ls, node):
+    #abstraction barrier function for accessing the adjacency list
+    return adj_ls[node][0]
+
+def get_visited(adj_ls, node):
+    #abstraction barrier function for accessing the adjacency list
+    return adj_ls[node][1]
 
 
 
 
-
+#linked list object that's just for implementing the queue
 class LL_node:
     def __init__(self, val):
         self.value = val
@@ -68,6 +90,7 @@ class LL_node:
     def giveNext(self):
         return self.next
 
+#queue for implementation of BFS
 class queue:
     def __init__(self):
         self.front = None
