@@ -70,8 +70,47 @@ def get_visited(adj_ls, node):
     #abstraction barrier function for accessing the adjacency list
     return adj_ls[node][1]
 
+def visit(adj_ls, node):
+    adj_ls[node][1] = True
+
+def devisit(adj_ls, node):
+    adj_ls[node][1] = False
+
+    
+
+def BFS(adj_ls, start_node):
+    """
+    Breadth First Search
+    """
+    found_nodes = []
+    Q = queue()
+    visit(adj_ls, start_node)
+    found_nodes.append(start_node)
+    while Q.is_empty() == False:
+        w = Q.dequeue()
+        for n in get_neighbors(adj_ls, w):
+            if get_visited(adj_ls, n) == False:
+                visit(adj_ls, n)
+                found_nodes.append(n)
+                Q.enqueue(n)
+
+    for node in adj_ls:         #resets all the visited statuses in the adj_ls to False after the search is done so that it doesn't interfere with the next BFS
+        devisit(adj_ls, node)
+    
+    return found_nodes
 
 
+
+def find_largest_cc(adj_ls):
+    """
+    Finds the largest connected component in the graph by running BFS starting from each node and finding whichever search returns the biggest list of nodes.
+    """
+    max_cc = []
+    for node in adj_ls:
+        current_cc = BFS(adj_ls, node)
+        if len(current_cc) > len(max_cc):
+            max_cc = current_cc
+    return max_cc
 
 
 class queue():                  #queue only for the purpose of implementing BFS
