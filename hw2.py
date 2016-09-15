@@ -22,10 +22,12 @@ def readData(filename):
             new_edge = frozenset(curr_ls)
             new_node1 = curr_ls[0]
             new_node2 = curr_ls[1]
-
-            edge_set.add(new_edge)
-            node_set.add(new_node1)
-            node_set.add(new_node2)
+            if new_node1 == new_node2:
+                pass
+            else:
+                edge_set.add(new_edge)
+                node_set.add(new_node1)
+                node_set.add(new_node2)
 
     node_ls = set_to_list(node_set)
 
@@ -46,8 +48,6 @@ def set_to_list(s):
     return ls
 
 
-ER_nodes, ER_edges = lab2.erdos_renyi(1500,3000)
-BA_nodes, BA_edges = lab2.barabasi_albert(1500,4,2)
 
 
 
@@ -55,7 +55,7 @@ def make_adj_ls(nodes, edges):
     """
     makes an adjacency list from a list of nodes and a list of edges. The adj list is represented as a dictionary whose keys are nodes and whose values are ordered lists.
     the first entry of the list contains a list of neighboring nodes. the second entry of the list contains a boolean that indicates whether the node has been visited with BFS.
-    this adj_ls will only be accessed using the following two accession functions.
+    this adj_ls will only be accessed using the following accession functions.
     """
     adj_ls = {}
     for n in nodes:
@@ -170,7 +170,12 @@ def plot_deg_dist(prefix):
     x = list(range(1,10))
     y = [math.exp(-a) for a in x]
     logx = [math.log(a) for a in x]
-    logy = [math.log(b) for b in y]
+    logy = []
+    for b in y:
+        if b == 0:
+            logy.append(0)
+        else:
+            logy.append(math.log(b))
     
     plt.subplot(1,2,1)
     plt.plot(x,y,'o-r')
@@ -195,7 +200,187 @@ def plot_deg_dist(prefix):
     return
 
 
+
+
+
+def plot_deg_hist(prefix,data):
+    fig = plt.figure(figsize=(6.5,4))
+    x = list(range(1,len(data)))
+    y = data[1:]
+    logx = [math.log(a) for a in x]
+    logy = []
+    for b in y:
+        if b == 0:
+            logy.append(0)
+        else:
+            logy.append(math.log(b))
+
+
+    plt.subplot(1,2,1)
+    plt.plot(x,y,'o-r')
+    plt.plot([0,8],[0,.3],'c--')
+    plt.axis([0,10,0,.4])
+    plt.xlabel('x')
+    plt.ylabel('y')
+    plt.title(prefix)
+    
+    plt.subplot(1,2,2)
+    plt.plot(logx,logy,'s-b')
+    plt.axis([-.1,2.5,-10,1])
+    plt.xlabel('log x')
+    plt.ylabel('log y')
+    plt.title(prefix+' (log)')
+    
+    plt.tight_layout()
+    
+    plt.savefig(prefix+'.png')
+    
+    print('wrote to '+prefix+'.png')
+    return
+
+
+def get_degrees(adj_ls, lcc):
+    """
+    return a dictionary whose keys are nodes in the lcc and whose values are the degree of the given node
+    """
+    degree_dict = {}
+    for node in lcc:
+        degree_dict[node] = len(get_neighbors(adj_ls,node))
+    return degree_dict
+
+def get_degree_hist_data(degree_dict):
+    """
+    returns a list whose indices are node degrees and whose entries are the number of nodes with that degree
+    """
+    max_degree = 0
+    for node in degree_dict:
+        current_degree = degree_dict[node]
+        if current_degree > max_degree:
+            max_degree = current_degree
+
+    ls = []
+    for n in range(max_degree+1):
+        ls.append(0)
+
+    for node in degree_dict:
+        current_degree = degree_dict[node]
+        ls[current_degree] += 1
+
+    total_nodes = len(degree_dict)
+
+    i = 0
+    while i < len(ls):
+        ls[i] = ls[i]/total_nodes
+        i+=1
+        
+    return ls
+            
+
+def deg_hist_ls(adj_lists, lcc_ls):
+    """
+    gets degree hist data for each of the datasets in the given lists, returns a list of data sets which can be fed into the plotting function.
+    the index of the adjacency list and largest connected component list must be consistent for each dataset or else this will screw up.
+    """
+    data_ls = []
+    i = 0
+    while i < len(adj_lists):
+        degree_dict = get_degrees(adj_lists[i],lcc_ls[i])
+        output = get_degree_hist_data(degree_dict)
+        data_ls.append(output)
+        i += 1
+    return data_ls
+
+
+def get_avg_neighbor_degree(adj_ls, lcc, degree_dict):
+    """
+    returns a dictionary whose keys are nodes and whose values are the average neighbor degree for that node
+    """
+    AND_dict = {}
+    for node in lcc:
+        di = degree_dict[node]
+        neighbor_list = get_neighbors(adj_ls,node)
+        dsum = 0
+        for n in neighbor_list:
+            dsum += degree_dict[n]
+        current_AND = dsum/di
+        AND_dict[node] = current_AND
+    return AND_dict
+
+def get_AND_plot_data(degree_dict, AND_dict):
+    """
+    returns a list whose indices are node degrees and whose entries are lists of average neighbor degrees.
+    also returns a list whose indices are node degrees and whose entries are the average of those lists.
+    """
+    data_ls = []
+    max_degree = 0
+    for node in degree_dict:
+        current_degree = degree_dict[node]
+        if current_degree > max_degree:
+            max_degree = current_degree
+
+    for n in range(max_degree+1):
+        data_ls.append([])
+
+    for node in degree_dict:
+        index = degree_dict[node]                #figures out the appropriate list in data_ls to go to, i.e. the list representing whatever degree the given node has
+        data_ls[index].append(AND_dict[node])    #appends the given node's average neighbor degree to that list
+
+    avg_ls = []
+    for n in range(max_degree+1):
+        avg_ls.append(0)
+
+    i = 0
+    while i < len(data_ls):
+        avg_ls[i] = sum(data_ls[i])/len(data_ls[i])
+
+    return data_ls, avg_ls
+    
+
+def AND_plot_ls(adj_lists, lcc_ls):
+    """
+    gets average neighbor degree plot data for a list of datasets. returns two lists, see get_AND_plot_data() for details.
+    the index of the adjacency list and largest connected component list must be consistent for each dataset or else this will screw up.
+    """
+    data_lists = []
+    avg_lists = []
+    i = 0
+    while i < len(adj_lists):
+        degree_dict = get_degrees(adj_lists[i],lcc_ls[i])
+        AND_dict = get_avg_neighbor_degree(adj_lists[i],lcc_ls[i],degree_dict)
+        data_ls, avg_ls = get_AND_plot_data(degree_dict, AND_dict)
+        data_lists.append(data_ls)
+        avg_lists.append(avg_ls)
+    return data_lists, avg_lists
+
+
 def main():
+    collins_nodes, collins_edges = readData('Collins.txt')
+    y2h_nodes, y2h_edges = readData('Y2H_union.txt')
+    lc_nodes, lc_edges = readData('LC_multiple.txt')
+    ER_nodes, ER_edges = lab2.erdos_renyi(1500,3000)
+    BA_nodes, BA_edges = lab2.barabasi_albert(1500,4,2)
+
+    
+    collins_adj = make_adj_ls(collins_nodes, collins_edges)
+    y2h_adj = make_adj_ls(y2h_nodes, y2h_edges)
+    lc_adj = make_adj_ls(lc_nodes, lc_edges)
+    ER_adj = make_adj_ls(ER_nodes, ER_edges)
+    BA_adj = make_adj_ls(BA_nodes, BA_edges)
+
+
+    collins_lcc = find_largest_cc(collins_adj)
+    y2h_lcc = find_largest_cc(y2h_adj)
+    lc_lcc = find_largest_cc(y2h_adj)
+    ER_lcc = find_largest_cc(ER_adj)
+    BA_lcc = find_largest_cc(BA_adj)
+    
+
+    adj_lists = [collins_adj, y2h_adj, lc_adj, ER_adj, BA_adj]
+    lcc_ls = [collins_lcc, y2h_lcc, lc_lcc, ER_lcc, BA_lcc]
+    
+    d_hist_data = deg_hist_ls(adj_lists, lcc_ls)
+    plot_deg_hist('test2',d_hist_data[0])
+    
     plot_deg_dist('test')
 
 
