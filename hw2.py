@@ -1,4 +1,9 @@
+import matplotlib
+matplotlib.use('Agg')
+
 import matplotlib.pyplot as plt
+
+
 import math
 import pylab
 import lab2
@@ -188,3 +193,11 @@ def plot_deg_dist(prefix):
     
     print('wrote to '+prefix+'.png')
     return
+
+
+def main():
+    plot_deg_dist('test')
+
+
+if __name__ == '__main__':
+    main()
