@@ -157,34 +157,34 @@ class LL_node():                 #node only for the purpose of implementing the 
     
     def attach(self, next_node):
         self.next = next_node
-            
 
-            
+
+
 def plot_deg_dist(prefix):
-    fig = plt.figure(figsize=(6.5,4)) # make a 6.5" wide by 4" tall figure.
-    x = list(range(1,10)) # make a list of [1,2,3,...9]
-    y = [math.exp(-a) for a in x] # y = e^{-x}
-    logx = [math.log(a) for a in x] # compute the log of x
-    logy = [math.log(b) for b in y] # compute the log of y
+    fig = plt.figure(figsize=(6.5,4))
+    x = list(range(1,10))
+    y = [math.exp(-a) for a in x]
+    logx = [math.log(a) for a in x]
+    logy = [math.log(b) for b in y]
     
-    plt.subplot(1,2,1) # in a 1-by-2 grid, 1st subplot
-    plt.plot(x,y,’o-r’) # plot a red line with circles
-    plt.plot([0,8],[0,.3],’c--’) # plot a dashed cyan line
-    plt.axis([0, 10, 0, .4]) # fix the axis range.
-    plt.xlabel(’x’)
-    plt.ylabel(’y’)
+    plt.subplot(1,2,1)
+    plt.plot(x,y,'o-r')
+    plt.plot([0,8],[0,.3],'c--')
+    plt.axis([0,10,0,.4])
+    plt.xlabel('x')
+    plt.ylabel('y')
     plt.title(prefix)
     
-    plt.subplot(1,2,2) # in a 1-by-2 grid, 2nd subplot
-    plt.plot(logx,logy,’s-b’) # plot a blue line with squares
-    plt.axis([-.1, 2.5, -10, 1]) # fix the axis range.
-    plt.xlabel(’log x’)
-    plt.ylabel(’log y’)
-    plt.title(prefix+’ (log)’)
+    plt.subplot(1,2,2)
+    plt.plot(logx,logy,'s-b')
+    plt.axis([-.1,2.5,-10,1])
+    plt.xlabel('log x')
+    plt.ylabel('log y')
+    plt.title(prefix+' (log)')
     
-    plt.tight_layout() # make the labels "snap" to the grid.
-                       # this may emit a warning, which is OK
-    plt.savefig(prefix+’.png’) # save figure as PNG
-    #plt.savefig(prefix+’.pdf’) # optionally ,save figure as PDF
-    print(’wrote to ’+prefix+’.png’)
+    plt.tight_layout()
+    
+    plt.savefig(prefix+'.png')
+    
+    print('wrote to '+prefix+'.png')
     return
