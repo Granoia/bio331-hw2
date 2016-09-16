@@ -487,6 +487,8 @@ def main():
 
     BA_AND_data, BA_avgs = get_AND_plot_data(BA_adj, BA_lcc)
 
+    print(BA_avgs)
+
     plot_AND_data('test4', BA_AND_data, BA_avgs)
 
 if __name__ == '__main__':
