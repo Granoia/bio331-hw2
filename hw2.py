@@ -3,6 +3,8 @@ matplotlib.use('Agg')
 
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
+import matplotlib.lines as mlines
+
 import numpy as np
 
 import math
@@ -391,7 +393,7 @@ def plot_AND_data(prefix,data,avg_data):
 
     avg_x = list(range(1,len(avg_data)))
     avg_y = avg_data[1:]
-    plt.plot(avg_x,avg_y,'o-r')
+    plt.plot(avg_x,avg_y,'or')
     red_patch = mpatches.Patch(color='red', label='Average AND for each x value')
     blue_patch = mpatches.Patch(color='blue', label='AND for each node')
     plt.legend(handles=[red_patch,blue_patch])
@@ -405,7 +407,26 @@ def plot_AND_dataset(prefix, data_ls, avg_ls):
     """
     plots the average neighbor degree for each of the datasets given in data_ls and avg_ls (see the AND data functions for details)
     """
-    pass
+    fig = plt.figure(figsize = (6.5,4))
+    for i in range(1,len(data_ls)):
+        x = list(range(1,len(data_ls[i])))
+        y = data_ls[i][1:]
+        plt.subplot(i,1,1)
+        for xe,ye in zip(x,y):
+            plt.scatter([xe] * len(ye), ye)
+        plt.xlabel('Node Degree')
+        plt.ylabel('Average Neighbor Degree')
+        avg_x = list(range(1,len(avg_ls[i])))
+        avg_y = avg_ls[i][1:]
+        plt.plot(avg_x,avg_y,'or')
+        red_patch = mpatches.Patch(color='red', label='Average AND for each x value')
+        blue_patch = mpatches.Patch(color='blue', label='AND for each node')
+        plt.legend(handles=[red_patch,blue_patch])
+    plt.savefig(prefix+'.png')
+    return
+    
+
+    
 
 
 
@@ -483,14 +504,25 @@ def main():
     
     adj_lists = [collins_adj, y2h_adj, lc_adj, ER_adj, BA_adj]
     lcc_ls = [collins_lcc, y2h_lcc, lc_lcc, ER_lcc, BA_lcc]
+
     
     d_hist_data = deg_hist_ls(adj_lists, lcc_ls)
-
+    
+    
     plot_DH_datasets('test3',d_hist_data)
 
-
+    AND_data_ls = []
+    avg_data_ls = []
+    
+    for i in range(len(adj_lists)):
+        AND_data, avg = get_AND_plot_data(adj_lists[i],lcc_ls[i])
+        AND_data_ls.append(AND_data)
+        avg_data_ls.append(avg)
+    
     BA_AND_data, BA_avgs = get_AND_plot_data(BA_adj, BA_lcc)
 
+    plot_AND_dataset('test5', AND_data_ls, avg_data_ls)
+    
     print(BA_avgs)
 
     plot_AND_data('test4', BA_AND_data, BA_avgs)
