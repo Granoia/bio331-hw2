@@ -206,7 +206,7 @@ def plot_DH_datasets(prefix,data_ls):
 
     plt.plot(logxs[0],logys[0],line_list[0],logxs[1],logys[1],line_list[1],logxs[2],logys[2],line_list[2],logxs[3],logys[3],line_list[3],logxs[4],logys[4],line_list[4])
     
-    plt.axis([0,15,0,1])
+    plt.axis([0,15,-10,1])
     plt.xlabel('x')
     plt.ylabel('y')
     plt.title(prefix)
