@@ -214,6 +214,20 @@ def plot_DH_datasets(prefix,data_ls):
     return
 
 
+def plot_AND_data(prefix,data):
+    fig = plt.figure(figsize=(6.5,4))
+    x = list(range(1,len(data)))
+    y = data[1:]
+
+    for xe,ye in zip(x,y):
+        plt.scatter([xe] * len(ye), ye)
+    plt.xlabel('x')
+    plt.ylabel('y')
+    plt.title(prefix)
+    plt.savefig(prefix+'.png')
+    return
+
+
 def plot_deg_hist(prefix,data):
     fig = plt.figure(figsize=(6.5,4))
     x = list(range(1,len(data)))
@@ -343,7 +357,12 @@ def get_AND_plot_data(degree_dict, AND_dict):
 
     i = 0
     while i < len(data_ls):
-        avg_ls[i] = sum(data_ls[i])/float(len(data_ls[i]))
+        if len(data_ls[i]) != 0:
+            avg_ls[i] = sum(data_ls[i])/float(len(data_ls[i]))
+        else:
+            avg_ls[i] = 0
+        i += 1
+
 
     return data_ls, avg_ls
     
@@ -391,25 +410,19 @@ def main():
     print("length of ER",len(ER_lcc))
     print("length of BA lcc is",len(BA_lcc))
     
-
-    ba_d_dict = get_degrees(BA_adj,BA_lcc)
-    ba_d_data = get_degree_hist_data(ba_d_dict)
-    print(ba_d_data)
     
     adj_lists = [collins_adj, y2h_adj, lc_adj, ER_adj, BA_adj]
     lcc_ls = [collins_lcc, y2h_lcc, lc_lcc, ER_lcc, BA_lcc]
     
     d_hist_data = deg_hist_ls(adj_lists, lcc_ls)
-    print(d_hist_data)
-
-    #print(d_hist_data[0])
-    
-    plot_deg_hist('test2',ba_d_data)
 
     plot_DH_datasets('test3',d_hist_data)
     
-    #plot_deg_dist('test')
+    BA_degrees = get_degrees(BA_adj, BA_lcc)
+    BA_AND = get_avg_neighbor_degree(BA_adj, BA_lcc, BA_degrees)
+    BA_AND_data, BA_avgs = get_AND_plot_data(BA_degrees, BA_AND)
 
+    plot_AND_data('test4', BA_AND_data)
 
 if __name__ == '__main__':
     main()
