@@ -214,18 +214,28 @@ def plot_DH_datasets(prefix,data_ls):
     return
 
 
-def plot_AND_data(prefix,data):
+def plot_AND_data(prefix,data,avg_data):
     fig = plt.figure(figsize=(6.5,4))
     x = list(range(1,len(data)))
     y = data[1:]
-
+    
     for xe,ye in zip(x,y):
         plt.scatter([xe] * len(ye), ye)
     plt.xlabel('x')
     plt.ylabel('y')
     plt.title(prefix)
     plt.savefig(prefix+'.png')
+
+    avg_x = list(range(1,len(avg_data)))
+    avg_y = avg_data[1:]
+    plt.plot(avg_x,avg_y,'o-r')
+    
     return
+
+
+def plot_AND_dataset(prefix, dataset):
+    pass
+
 
 
 def plot_deg_hist(prefix,data):
@@ -422,7 +432,7 @@ def main():
     BA_AND = get_avg_neighbor_degree(BA_adj, BA_lcc, BA_degrees)
     BA_AND_data, BA_avgs = get_AND_plot_data(BA_degrees, BA_AND)
 
-    plot_AND_data('test4', BA_AND_data)
+    plot_AND_data('test4', BA_AND_data, BA_avgs)
 
 if __name__ == '__main__':
     main()
