@@ -372,8 +372,7 @@ def get_AND_plot_data(degree_dict, AND_dict):
     while i < len(data_ls):
         if len(data_ls[i]) != 0:
             avg_ls[i] = sum(data_ls[i])/float(len(data_ls[i]))
-        else:
-            avg_ls[i] = 0
+            
         i += 1
 
 
