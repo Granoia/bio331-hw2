@@ -403,7 +403,7 @@ def plot_AND_data(prefix,data,avg_data):
     return
 
 
-def plot_AND_dataset(prefix, data_ls, avg_ls):
+def plot_AND_dataset(prefix, data_ls, avg_ls, title_ls=None):
     """
     plots the average neighbor degree for each of the datasets given in data_ls and avg_ls (see the AND data functions for details)
     """
@@ -419,13 +419,17 @@ def plot_AND_dataset(prefix, data_ls, avg_ls):
         y = data_ls[i][1:]
         for xe,ye in zip(x,y):
             row.scatter([xe] * len(ye), ye)
-        #row.xlabel('Node Degree')
-        #row.ylabel('Average Neighbor Degree')
         avg_x = list(range(1,len(avg_ls[i])))
         avg_y = avg_ls[i][1:]
         row.plot(avg_x,avg_y,'or')
+        if title_ls != None:
+            row.set_title(title_ls[i])
+            
         i += 1
+    
     fig.tight_layout()
+    fig.text(0.5,0.04,'Node Degree',ha='center')
+    fig.text(0.04,0.5,'Average Neighbor Degree',va='center', rotation='vertical')
 
     fig.savefig(prefix+'.png')
     return
@@ -527,7 +531,7 @@ def main():
     
     adj_lists = [collins_adj, y2h_adj, lc_adj, ER_adj, BA_adj]
     lcc_ls = [collins_lcc, y2h_lcc, lc_lcc, ER_lcc, BA_lcc]
-
+    title_ls = ['Co-complex (Combined-AP/MS)', 'Binary (Y2H-Union)', 'Literature (LC-multiple)', 'Erdos-Renyi Simulation', 'Barabasi-Albert Simulation']
     
     d_hist_data = deg_hist_ls(adj_lists, lcc_ls)
     
@@ -544,7 +548,7 @@ def main():
     
     BA_AND_data, BA_avgs = get_AND_plot_data(BA_adj, BA_lcc)
 
-    plot_AND_dataset('test5', AND_data_ls, avg_data_ls)
+    plot_AND_dataset('test5', AND_data_ls, avg_data_ls, title_ls)
     
     print(BA_avgs)
 
