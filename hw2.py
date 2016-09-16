@@ -393,7 +393,7 @@ def plot_AND_data(prefix,data,avg_data):
     plots the average neighbor degree of a single graph
     the dataset for this function should be obtained using get_AND_plot_data()
     """
-    fig = plt.figure(figsize=(6.5,4))
+    fig = plt.figure()
     x = list(range(1,len(data)))
     y = data[1:]
     
