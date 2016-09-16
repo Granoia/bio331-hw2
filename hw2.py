@@ -227,7 +227,6 @@ def get_degrees(adj_ls, lcc):
     print("length of lcc is:",len(lcc))
     for node in lcc:
         degree_dict[node] = len(get_neighbors(adj_ls,node))
-    print(degree_dict)
     return degree_dict
 
 def get_degree_hist_data(degree_dict):
@@ -240,7 +239,6 @@ def get_degree_hist_data(degree_dict):
         if current_degree > max_degree:
             max_degree = current_degree
 
-    print("Max degree is",max_degree)
     ls = []
     for n in range(max_degree+1):
         ls.append(0)
@@ -248,12 +246,13 @@ def get_degree_hist_data(degree_dict):
     for node in degree_dict:
         current_degree = degree_dict[node]
         ls[current_degree] += 1
-
     total_nodes = len(degree_dict)
-
+    
     i = 0
     while i < len(ls):
-        ls[i] = ls[i]/total_nodes
+        current = ls[i]
+        quotient = float(current)/total_nodes
+        ls[i] = quotient
         i+=1
         
     return ls
@@ -339,42 +338,46 @@ def AND_plot_ls(adj_lists, lcc_ls):
 
 
 def main():
-    collins_nodes, collins_edges = readData('Collins.txt')
-    y2h_nodes, y2h_edges = readData('Y2H_union.txt')
-    lc_nodes, lc_edges = readData('LC_multiple.txt')
-    ER_nodes, ER_edges = lab2.erdos_renyi(1500,3000)
+    #collins_nodes, collins_edges = readData('Collins.txt')
+    #y2h_nodes, y2h_edges = readData('Y2H_union.txt')
+    #lc_nodes, lc_edges = readData('LC_multiple.txt')
+    #ER_nodes, ER_edges = lab2.erdos_renyi(1500,3000)
     BA_nodes, BA_edges = lab2.barabasi_albert(1500,4,2)
 
     
-    collins_adj = make_adj_ls(collins_nodes, collins_edges)
-    y2h_adj = make_adj_ls(y2h_nodes, y2h_edges)
-    lc_adj = make_adj_ls(lc_nodes, lc_edges)
-    ER_adj = make_adj_ls(ER_nodes, ER_edges)
+    #collins_adj = make_adj_ls(collins_nodes, collins_edges)
+    #y2h_adj = make_adj_ls(y2h_nodes, y2h_edges)
+    #lc_adj = make_adj_ls(lc_nodes, lc_edges)
+    #ER_adj = make_adj_ls(ER_nodes, ER_edges)
     BA_adj = make_adj_ls(BA_nodes, BA_edges)
 
 
-    collins_lcc = find_largest_cc(collins_adj)
-    y2h_lcc = find_largest_cc(y2h_adj)
-    lc_lcc = find_largest_cc(lc_adj)
-    ER_lcc = find_largest_cc(ER_adj)
+    #collins_lcc = find_largest_cc(collins_adj)
+    #y2h_lcc = find_largest_cc(y2h_adj)
+    #lc_lcc = find_largest_cc(lc_adj)
+    #ER_lcc = find_largest_cc(ER_adj)
     BA_lcc = find_largest_cc(BA_adj)
-    print("length of collins",len(collins_lcc))
-    print("length of y2h",len(y2h_lcc))
-    print("length of lc",len(lc_lcc))
-    print("length of ER",len(ER_lcc))
+    #print("length of collins",len(collins_lcc))
+    #print("length of y2h",len(y2h_lcc))
+    #print("length of lc",len(lc_lcc))
+    #print("length of ER",len(ER_lcc))
     print("length of BA lcc is",len(BA_lcc))
     
 
-    adj_lists = [collins_adj, y2h_adj, lc_adj, ER_adj, BA_adj]
-    lcc_ls = [collins_lcc, y2h_lcc, lc_lcc, ER_lcc, BA_lcc]
+    ba_d_dict = get_degrees(BA_adj,BA_lcc)
+    ba_d_data =get_degree_hist_data(ba_d_dict)
+    print(ba_d_data)
     
-    d_hist_data = deg_hist_ls(adj_lists, lcc_ls)
+    #adj_lists = [collins_adj, y2h_adj, lc_adj, ER_adj, BA_adj]
+    #lcc_ls = [collins_lcc, y2h_lcc, lc_lcc, ER_lcc, BA_lcc]
+    
+    #d_hist_data = deg_hist_ls(adj_lists, lcc_ls)
 
-    print(d_hist_data[0])
+    #print(d_hist_data[0])
     
-    plot_deg_hist('test2',d_hist_data[0])
+    plot_deg_hist('test2',ba_d_data)
     
-    plot_deg_dist('test')
+    #plot_deg_dist('test')
 
 
 if __name__ == '__main__':
