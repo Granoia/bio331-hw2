@@ -424,7 +424,7 @@ def plot_AND_dataset(prefix, data_ls, avg_ls, title_ls=None):
         row.plot(avg_x,avg_y,'or')
         if title_ls != None:
             row.set_title(title_ls[i])
-        row.locator_params(nbins=5,axis='y')
+        row.locator_params(nbins=6,axis='y')
             
         i += 1
     
