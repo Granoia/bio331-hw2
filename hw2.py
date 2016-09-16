@@ -428,31 +428,11 @@ def plot_AND_dataset(prefix, data_ls, avg_ls, title_ls=None):
         i += 1
     
     fig.tight_layout()
-    fig.text(0.5,0.02,'Node Degree',ha='center')
-    fig.text(0.02,0.5,'Average Neighbor Degree',va='center', rotation='vertical')
+    fig.text(0.5,0.01,'Node Degree',ha='center')
+    fig.text(0.01,0.5,'Average Neighbor Degree',va='center', rotation='vertical')
 
     fig.savefig(prefix+'.png')
     return
-    
-    '''
-    for i in range(1,len(data_ls)):
-        x = list(range(1,len(data_ls[i])))
-        y = data_ls[i][1:]
-        plt.subplot(i,1,i)
-        for xe,ye in zip(x,y):
-            plt.scatter([xe] * len(ye), ye)
-        plt.xlabel('Node Degree')
-        plt.ylabel('Average Neighbor Degree')
-        avg_x = list(range(1,len(avg_ls[i])))
-        avg_y = avg_ls[i][1:]
-        plt.plot(avg_x,avg_y,'or')
-        red_patch = mpatches.Patch(color='red', label='Average AND for each x value')
-        blue_patch = mpatches.Patch(color='blue', label='AND for each node')
-        plt.legend(handles=[red_patch,blue_patch])
-    plt.savefig(prefix+'.png')
-    return
-    '''
-
     
 
 
