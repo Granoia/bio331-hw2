@@ -8,6 +8,9 @@ import math
 import pylab
 import lab2
 
+####################################
+#DATA READING FUNCTIONS#############
+####################################
 
 def readData(filename):
     """
@@ -40,7 +43,7 @@ def readData(filename):
 
 def set_to_list(s):
     """
-    helper function that converts a set into a list containing all the elements that the set had.
+    helper function for readData() that converts a set into a list containing all the elements that the set had.
     """
     ls = []
     for item in s:
@@ -50,6 +53,9 @@ def set_to_list(s):
 
 
 
+###################################################
+#GRAPH CREATION / NAVIGATION FUCTIONS##############
+###################################################
 
 def make_adj_ls(nodes, edges):
     """
@@ -77,16 +83,43 @@ def get_visited(adj_ls, node):
     return adj_ls[node][1]
 
 def visit(adj_ls, node):
+    #sets the visited status of a node to True
     adj_ls[node][1] = True
 
 def devisit(adj_ls, node):
+    #sets the visited status of a node to False
     adj_ls[node][1] = False
 
 def reset_visits(adj_ls):
+    #sets the visited status of all nodes to False
     for node in adj_ls:
         devisit(adj_ls, node)
-    
-class queue_b:
+
+
+
+def BFS(adj_ls, start_node):
+    """
+    Breadth First Search
+    Finds all the nodes belonging whichever connected component start_node is in and returns them in a list
+    """
+    found_nodes = []
+    Q = queue()
+    visit(adj_ls, start_node)
+    found_nodes.append(start_node)
+    Q.enqueue(start_node)
+    while Q.get_length() != 0:
+        w = Q.dequeue()
+        for n in get_neighbors(adj_ls, w):
+            if get_visited(adj_ls, n) == False:
+                visit(adj_ls, n)
+                found_nodes.append(n)
+                Q.enqueue(n)
+    #IN MEMORIAM: 2 hours of debugging time spent on this function even though there was no bug in this function RIP
+    return found_nodes
+
+
+class queue:
+    #queue solely for the purpose of implementing Breadth First Search
     def __init__(self):
         self.q = []
 
@@ -109,30 +142,10 @@ class queue_b:
         return len(self.q)
 
 
-def BFS(adj_ls, start_node):
-    """
-    Breadth First Search
-    """
-    found_nodes = []
-    Q = queue_b()
-    visit(adj_ls, start_node)
-    found_nodes.append(start_node)
-    Q.enqueue(start_node)
-    while Q.get_length() != 0:
-        w = Q.dequeue()
-        for n in get_neighbors(adj_ls, w):
-            if get_visited(adj_ls, n) == False:
-                visit(adj_ls, n)
-                found_nodes.append(n)
-                Q.enqueue(n)
-    #IN MEMORIAM: 2 hours of debugging time spent on this function even though there was no bug in this function RIP
-    return found_nodes
-
-
 
 def find_largest_cc(adj_ls):
     """
-    Finds the largest connected component in the graph by running BFS starting from each node and finding whichever search returns the biggest list of nodes.
+    Finds and returns the largest connected component of a graph using BFS.
     """
     max_cc = []
     for node in adj_ls:
@@ -145,137 +158,11 @@ def find_largest_cc(adj_ls):
 
 
 
-def plot_deg_dist(prefix):
-    fig = plt.figure(figsize=(6.5,4))
-    x = list(range(1,10))
-    y = [math.exp(-a) for a in x]
-    logx = [math.log(a) for a in x]
-    logy = []
-    for b in y:
-        if b == 0:
-            logy.append(0)
-        else:
-            logy.append(math.log(b))
-    
-    plt.subplot(1,2,1)
-    plt.plot(x,y,'o-r')
-    plt.plot([0,8],[0,.3],'c--')
-    plt.axis([0,10,0,.4])
-    plt.xlabel('x')
-    plt.ylabel('y')
-    plt.title(prefix)
-    
-    plt.subplot(1,2,2)
-    plt.plot(logx,logy,'s-b')
-    plt.axis([-.1,2.5,-10,1])
-    plt.xlabel('log x')
-    plt.ylabel('log y')
-    plt.title(prefix+' (log)')
-    
-    plt.tight_layout()
-    
-    plt.savefig(prefix+'.png')
-    
-    print('wrote to '+prefix+'.png')
-    return
 
 
-
-def plot_DH_datasets(prefix,data_ls):
-    fig = plt.figure(figsize=(6.5,4))
-    i = 0
-    line_list = ['ro','go','bo','yo','mo','co']
-    logxs = []
-    logys = []
-    
-    for data in data_ls:
-        x = list(range(1,len(data)))
-        y = data[1:]
-        logx = [math.log(a) for a in x]
-        logy = []
-        for b in y:
-            if b == 0:
-                logy.append(0)
-            else:
-                logy.append(math.log(b))
-        logxs.append(logx)
-        logys.append(logy)
-        print(len(logx),len(logy))
-
-    #plt.plot(x,y,line_list[0])
-
-    plt.plot(logxs[0],logys[0],line_list[0],logxs[1],logys[1],line_list[1],logxs[2],logys[2],line_list[2],logxs[3],logys[3],line_list[3],logxs[4],logys[4],line_list[4])
-    
-    plt.axis([0,15,-10,1])
-    plt.xlabel('x')
-    plt.ylabel('y')
-    plt.title(prefix)
-    plt.savefig(prefix+'.png')
-    return
-
-
-def plot_AND_data(prefix,data,avg_data):
-    fig = plt.figure(figsize=(6.5,4))
-    x = list(range(1,len(data)))
-    y = data[1:]
-    
-    for xe,ye in zip(x,y):
-        plt.scatter([xe] * len(ye), ye)
-    plt.xlabel('x')
-    plt.ylabel('y')
-    plt.title(prefix)
-
-    avg_x = list(range(1,len(avg_data)))
-    avg_y = avg_data[1:]
-    plt.plot(avg_x,avg_y,'o-r')
-    
-    plt.savefig(prefix+'.png')
-
-
-    
-    return
-
-
-def plot_AND_dataset(prefix, dataset):
-    pass
-
-
-
-def plot_deg_hist(prefix,data):
-    fig = plt.figure(figsize=(6.5,4))
-    x = list(range(1,len(data)))
-    y = data[1:]
-    logx = [math.log(a) for a in x]
-    logy = []
-    for b in y:
-        if b == 0:
-            logy.append(0)
-        else:
-            logy.append(math.log(b))
-
-
-    plt.subplot(1,2,1)
-    plt.plot(x,y,'o-r')
-    plt.plot([0,8],[0,.3],'c--')
-    plt.axis([0,10,0,.4])
-    plt.xlabel('x')
-    plt.ylabel('y')
-    plt.title(prefix)
-    
-    plt.subplot(1,2,2)
-    plt.plot(logx,logy,'s-b')
-    plt.axis([-.1,2.5,-10,1])
-    plt.xlabel('log x')
-    plt.ylabel('log y')
-    plt.title(prefix+' (log)')
-    
-    plt.tight_layout()
-    
-    plt.savefig(prefix+'.png')
-    
-    print('wrote to '+prefix+'.png')
-    return
-
+###############################################################
+#GRAPH STATISTIC FUNCTIONS#####################################
+###############################################################
 
 def get_degrees(adj_ls, lcc):
     """
@@ -330,10 +217,11 @@ def deg_hist_ls(adj_lists, lcc_ls):
     return data_ls
 
 
-def get_avg_neighbor_degree(adj_ls, lcc, degree_dict):
+def get_avg_neighbor_degree(adj_ls, lcc):
     """
     returns a dictionary whose keys are nodes and whose values are the average neighbor degree for that node
     """
+    degree_dict = get_degrees(adj_ls, lcc)
     AND_dict = {}
     for node in lcc:
         di = degree_dict[node]
@@ -345,11 +233,14 @@ def get_avg_neighbor_degree(adj_ls, lcc, degree_dict):
         AND_dict[node] = current_AND
     return AND_dict
 
-def get_AND_plot_data(degree_dict, AND_dict):
+
+def get_AND_plot_data(adj_ls, lcc):
     """
     returns a list whose indices are node degrees and whose entries are lists of average neighbor degrees.
     also returns a list whose indices are node degrees and whose entries are the average of those lists.
     """
+    degree_dict = get_degrees(adj_ls, lcc)
+    AND_dict = get_avg_neighbor_degree(adj_ls, lcc)
     data_ls = []
     max_degree = 0
     for node in degree_dict:
@@ -372,6 +263,8 @@ def get_AND_plot_data(degree_dict, AND_dict):
     while i < len(data_ls):
         if len(data_ls[i]) != 0:
             avg_ls[i] = sum(data_ls[i])/float(len(data_ls[i]))
+        else:
+            avg_ls[i] = float('nan')
             
         i += 1
 
@@ -394,6 +287,167 @@ def AND_plot_ls(adj_lists, lcc_ls):
         data_lists.append(data_ls)
         avg_lists.append(avg_ls)
     return data_lists, avg_lists
+
+
+
+
+
+
+
+###################################################################
+#FIGURE PLOTTING FUNCTIONS#########################################
+###################################################################
+
+
+def plot_deg_dist(prefix):
+    """
+    example function for plotting things
+    """
+    fig = plt.figure(figsize=(6.5,4))
+    x = list(range(1,10))
+    y = [math.exp(-a) for a in x]
+    logx = [math.log(a) for a in x]
+    logy = []
+    for b in y:
+        if b == 0:
+            logy.append(0)
+        else:
+            logy.append(math.log(b))
+    
+    plt.subplot(1,2,1)
+    plt.plot(x,y,'o-r')
+    plt.plot([0,8],[0,.3],'c--')
+    plt.axis([0,10,0,.4])
+    plt.xlabel('x')
+    plt.ylabel('y')
+    plt.title(prefix)
+    
+    plt.subplot(1,2,2)
+    plt.plot(logx,logy,'s-b')
+    plt.axis([-.1,2.5,-10,1])
+    plt.xlabel('log x')
+    plt.ylabel('log y')
+    plt.title(prefix+' (log)')
+    
+    plt.tight_layout()
+    
+    plt.savefig(prefix+'.png')
+    
+    print('wrote to '+prefix+'.png')
+    return
+
+
+
+def plot_DH_datasets(prefix,data_ls):
+    """
+    plots each of the Degree Histogram datasets delivered in the data list
+    """
+    fig = plt.figure(figsize=(6.5,4))
+    i = 0
+    line_list = ['ro','go','bo','yo','mo','co']
+    logxs = []
+    logys = []
+    
+    for data in data_ls:
+        x = list(range(1,len(data)))
+        y = data[1:]
+        logx = [math.log(a) for a in x]
+        logy = []
+        for b in y:
+            if b == 0:
+                logy.append(0)
+            else:
+                logy.append(math.log(b))
+        logxs.append(logx)
+        logys.append(logy)
+        print(len(logx),len(logy))
+
+    #plt.plot(x,y,line_list[0])
+
+    plt.plot(logxs[0],logys[0],line_list[0],logxs[1],logys[1],line_list[1],logxs[2],logys[2],line_list[2],logxs[3],logys[3],line_list[3],logxs[4],logys[4],line_list[4])
+    
+    plt.axis([0,15,-10,1])
+    plt.xlabel('x')
+    plt.ylabel('y')
+    plt.title(prefix)
+    plt.savefig(prefix+'.png')
+    return
+
+
+def plot_AND_data(prefix,data,avg_data):
+    """
+    test function for plotting the average neighbor degree of a single graph
+    """
+    fig = plt.figure(figsize=(6.5,4))
+    x = list(range(1,len(data)))
+    y = data[1:]
+    
+    for xe,ye in zip(x,y):
+        plt.scatter([xe] * len(ye), ye)
+    plt.xlabel('x')
+    plt.ylabel('y')
+    plt.title(prefix)
+
+    avg_x = list(range(1,len(avg_data)))
+    avg_y = avg_data[1:]
+    plt.plot(avg_x,avg_y,'o-r')
+    
+    plt.savefig(prefix+'.png')
+
+    return
+
+
+def plot_AND_dataset(prefix, data_ls, avg_ls):
+    """
+    plots the average neighbor degree for each of the datasets given in data_ls and avg_ls (see the AND data functions for details)
+    """
+    pass
+
+
+
+def plot_deg_hist(prefix,data):
+    """
+    test function for plotting the degree histogram of a single dataset
+    """
+    fig = plt.figure(figsize=(6.5,4))
+    x = list(range(1,len(data)))
+    y = data[1:]
+    logx = [math.log(a) for a in x]
+    logy = []
+    for b in y:
+        if b == 0:
+            logy.append(0)
+        else:
+            logy.append(math.log(b))
+
+
+    plt.subplot(1,2,1)
+    plt.plot(x,y,'o-r')
+    plt.plot([0,8],[0,.3],'c--')
+    plt.axis([0,10,0,.4])
+    plt.xlabel('x')
+    plt.ylabel('y')
+    plt.title(prefix)
+    
+    plt.subplot(1,2,2)
+    plt.plot(logx,logy,'s-b')
+    plt.axis([-.1,2.5,-10,1])
+    plt.xlabel('log x')
+    plt.ylabel('log y')
+    plt.title(prefix+' (log)')
+    
+    plt.tight_layout()
+    
+    plt.savefig(prefix+'.png')
+    
+    print('wrote to '+prefix+'.png')
+    return
+
+
+
+#################################################################################
+#main() (put functions you want to execute in this block of code#################
+#################################################################################
 
 
 def main():
@@ -429,10 +483,9 @@ def main():
     d_hist_data = deg_hist_ls(adj_lists, lcc_ls)
 
     plot_DH_datasets('test3',d_hist_data)
-    
-    BA_degrees = get_degrees(BA_adj, BA_lcc)
-    BA_AND = get_avg_neighbor_degree(BA_adj, BA_lcc, BA_degrees)
-    BA_AND_data, BA_avgs = get_AND_plot_data(BA_degrees, BA_AND)
+
+
+    BA_AND_data, BA_avgs = get_AND_plot_data(BA_adj, BA_lcc)
 
     plot_AND_data('test4', BA_AND_data, BA_avgs)
 
