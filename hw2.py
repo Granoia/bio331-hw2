@@ -224,11 +224,14 @@ def plot_AND_data(prefix,data,avg_data):
     plt.xlabel('x')
     plt.ylabel('y')
     plt.title(prefix)
-    plt.savefig(prefix+'.png')
 
     avg_x = list(range(1,len(avg_data)))
     avg_y = avg_data[1:]
     plt.plot(avg_x,avg_y,'o-r')
+    
+    plt.savefig(prefix+'.png')
+
+
     
     return
 
