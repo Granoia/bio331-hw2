@@ -2,6 +2,7 @@ import matplotlib
 matplotlib.use('Agg')
 
 import matplotlib.pyplot as plt
+import matplotlib.patches as mpatches
 import numpy as np
 
 import math
@@ -391,6 +392,9 @@ def plot_AND_data(prefix,data,avg_data):
     avg_x = list(range(1,len(avg_data)))
     avg_y = avg_data[1:]
     plt.plot(avg_x,avg_y,'o-r')
+    red_patch = mpatches.Patch(color='red', label='Average AND for each x value')
+    blue_patch = mpatches.Patch(color='blue', label='AND for each node')
+    plt.legend(handles=[red_patch,blue_patch])
     
     plt.savefig(prefix+'.png')
 
@@ -446,7 +450,7 @@ def plot_deg_hist(prefix,data):
 
 
 #################################################################################
-#main() (put functions you want to execute in this block of code#################
+#main() (put functions you want to execute in this block of code)################
 #################################################################################
 
 
