@@ -407,11 +407,33 @@ def plot_AND_dataset(prefix, data_ls, avg_ls):
     """
     plots the average neighbor degree for each of the datasets given in data_ls and avg_ls (see the AND data functions for details)
     """
-    fig = plt.figure(figsize = (6.5,4))
+    fig = plt.figure()
+
+
+    nrows = 5
+    fig, axes = plt.subplots(nrows, 1)
+
+    i = 0
+    for row in axes:
+        x = list(range(1,len(data_ls[i])))
+        y = data_ls[i][1:]
+        for xe,ye in zip(x,y):
+            row.scatter([xe] * len(ye), ye)
+        #row.xlabel('Node Degree')
+        #row.ylabel('Average Neighbor Degree')
+        avg_x = list(range(1,len(avg_ls[i])))
+        avg_y = avg_ls[i][1:]
+        row.plot(avg_x,avg_y,'or')
+        i += 1
+
+    fig.savefig(prefix+'.png')
+    return
+    
+    '''
     for i in range(1,len(data_ls)):
         x = list(range(1,len(data_ls[i])))
         y = data_ls[i][1:]
-        plt.subplot(i,1,1)
+        plt.subplot(i,1,i)
         for xe,ye in zip(x,y):
             plt.scatter([xe] * len(ye), ye)
         plt.xlabel('Node Degree')
@@ -424,7 +446,7 @@ def plot_AND_dataset(prefix, data_ls, avg_ls):
         plt.legend(handles=[red_patch,blue_patch])
     plt.savefig(prefix+'.png')
     return
-    
+    '''
 
     
 
