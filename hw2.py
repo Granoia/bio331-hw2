@@ -2,7 +2,7 @@ import matplotlib
 matplotlib.use('Agg')
 
 import matplotlib.pyplot as plt
-
+import numpy as np
 
 import math
 import pylab
@@ -181,6 +181,37 @@ def plot_deg_dist(prefix):
 
 
 
+def plot_DH_datasets(prefix,data_ls):
+    fig = plt.figure(figsize=(6.5,4))
+    i = 0
+    line_list = ['r-o','g-o','b-o','y-o','m-o','c-o']
+    logxs = []
+    logys = []
+    
+    for data in data_ls:
+        x = list(range(1,len(data)))
+        y = data[1:]
+        logx = [math.log(a) for a in x]
+        logy = []
+        for b in y:
+            if b == 0:
+                logy.append(0)
+            else:
+                logy.append(math.log(b))
+        logxs.append(logx)
+        logys.append(logy)
+        print(len(logx),len(logy))
+
+    plt.plot(x,y,line_list[0])
+
+    #plt.plot(logxs[0],logys[0],line_list[0],logxs[1],logys[1],line_list[1],logxs[2],logys[2],line_list[2],logxs[3],logys[3],line_list[3],logxs[4],logys[4],line_list[4])
+    
+    plt.axis([0,15,0,1])
+    plt.xlabel('x')
+    plt.ylabel('y')
+    plt.title(prefix)
+    plt.savefig(prefix+'.png')
+    return
 
 
 def plot_deg_hist(prefix,data):
@@ -224,7 +255,6 @@ def get_degrees(adj_ls, lcc):
     return a dictionary whose keys are nodes in the lcc and whose values are the degree of the given node
     """
     degree_dict = {}
-    print("length of lcc is:",len(lcc))
     for node in lcc:
         degree_dict[node] = len(get_neighbors(adj_ls,node))
     return degree_dict
@@ -268,8 +298,6 @@ def deg_hist_ls(adj_lists, lcc_ls):
     while i < len(adj_lists):
         degree_dict = get_degrees(adj_lists[i],lcc_ls[i])
         output = get_degree_hist_data(degree_dict)
-        print(output)
-        print(type(output))
         data_ls.append(output)
         i += 1
     return data_ls
@@ -286,7 +314,7 @@ def get_avg_neighbor_degree(adj_ls, lcc, degree_dict):
         dsum = 0
         for n in neighbor_list:
             dsum += degree_dict[n]
-        current_AND = dsum/di
+        current_AND = float(dsum)/di
         AND_dict[node] = current_AND
     return AND_dict
 
@@ -315,7 +343,7 @@ def get_AND_plot_data(degree_dict, AND_dict):
 
     i = 0
     while i < len(data_ls):
-        avg_ls[i] = sum(data_ls[i])/len(data_ls[i])
+        avg_ls[i] = sum(data_ls[i])/float(len(data_ls[i]))
 
     return data_ls, avg_ls
     
@@ -338,44 +366,47 @@ def AND_plot_ls(adj_lists, lcc_ls):
 
 
 def main():
-    #collins_nodes, collins_edges = readData('Collins.txt')
-    #y2h_nodes, y2h_edges = readData('Y2H_union.txt')
-    #lc_nodes, lc_edges = readData('LC_multiple.txt')
-    #ER_nodes, ER_edges = lab2.erdos_renyi(1500,3000)
+    collins_nodes, collins_edges = readData('Collins.txt')
+    y2h_nodes, y2h_edges = readData('Y2H_union.txt')
+    lc_nodes, lc_edges = readData('LC_multiple.txt')
+    ER_nodes, ER_edges = lab2.erdos_renyi(1500,3000)
     BA_nodes, BA_edges = lab2.barabasi_albert(1500,4,2)
 
     
-    #collins_adj = make_adj_ls(collins_nodes, collins_edges)
-    #y2h_adj = make_adj_ls(y2h_nodes, y2h_edges)
-    #lc_adj = make_adj_ls(lc_nodes, lc_edges)
-    #ER_adj = make_adj_ls(ER_nodes, ER_edges)
+    collins_adj = make_adj_ls(collins_nodes, collins_edges)
+    y2h_adj = make_adj_ls(y2h_nodes, y2h_edges)
+    lc_adj = make_adj_ls(lc_nodes, lc_edges)
+    ER_adj = make_adj_ls(ER_nodes, ER_edges)
     BA_adj = make_adj_ls(BA_nodes, BA_edges)
 
 
-    #collins_lcc = find_largest_cc(collins_adj)
-    #y2h_lcc = find_largest_cc(y2h_adj)
-    #lc_lcc = find_largest_cc(lc_adj)
-    #ER_lcc = find_largest_cc(ER_adj)
+    collins_lcc = find_largest_cc(collins_adj)
+    y2h_lcc = find_largest_cc(y2h_adj)
+    lc_lcc = find_largest_cc(lc_adj)
+    ER_lcc = find_largest_cc(ER_adj)
     BA_lcc = find_largest_cc(BA_adj)
-    #print("length of collins",len(collins_lcc))
-    #print("length of y2h",len(y2h_lcc))
-    #print("length of lc",len(lc_lcc))
-    #print("length of ER",len(ER_lcc))
+    print("length of collins",len(collins_lcc))
+    print("length of y2h",len(y2h_lcc))
+    print("length of lc",len(lc_lcc))
+    print("length of ER",len(ER_lcc))
     print("length of BA lcc is",len(BA_lcc))
     
 
     ba_d_dict = get_degrees(BA_adj,BA_lcc)
-    ba_d_data =get_degree_hist_data(ba_d_dict)
+    ba_d_data = get_degree_hist_data(ba_d_dict)
     print(ba_d_data)
     
-    #adj_lists = [collins_adj, y2h_adj, lc_adj, ER_adj, BA_adj]
-    #lcc_ls = [collins_lcc, y2h_lcc, lc_lcc, ER_lcc, BA_lcc]
+    adj_lists = [collins_adj, y2h_adj, lc_adj, ER_adj, BA_adj]
+    lcc_ls = [collins_lcc, y2h_lcc, lc_lcc, ER_lcc, BA_lcc]
     
-    #d_hist_data = deg_hist_ls(adj_lists, lcc_ls)
+    d_hist_data = deg_hist_ls(adj_lists, lcc_ls)
+    print(d_hist_data)
 
     #print(d_hist_data[0])
     
     plot_deg_hist('test2',ba_d_data)
+
+    plot_DH_datasets('test3',d_hist_data)
     
     #plot_deg_dist('test')
 
