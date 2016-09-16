@@ -428,8 +428,8 @@ def plot_AND_dataset(prefix, data_ls, avg_ls, title_ls=None):
         i += 1
     
     fig.tight_layout()
-    fig.text(0.5,0.04,'Node Degree',ha='center')
-    fig.text(0.04,0.5,'Average Neighbor Degree',va='center', rotation='vertical')
+    fig.text(0.3,0.04,'Node Degree',ha='center')
+    fig.text(0.04,0.3,'Average Neighbor Degree',va='center', rotation='vertical')
 
     fig.savefig(prefix+'.png')
     return
