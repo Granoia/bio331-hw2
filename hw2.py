@@ -425,6 +425,7 @@ def plot_AND_dataset(prefix, data_ls, avg_ls):
         avg_y = avg_ls[i][1:]
         row.plot(avg_x,avg_y,'or')
         i += 1
+    fig.tight_layout()
 
     fig.savefig(prefix+'.png')
     return
