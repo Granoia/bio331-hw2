@@ -82,27 +82,50 @@ def visit(adj_ls, node):
 def devisit(adj_ls, node):
     adj_ls[node][1] = False
 
+def reset_visits(adj_ls):
+    for node in adj_ls:
+        devisit(adj_ls, node)
     
+class queue_b:
+    def __init__(self):
+        self.q = []
+
+    def enqueue(self, item):
+        self.q.append(item)
+
+    def dequeue(self):
+        if len(self.q) > 0:
+            return self.q.pop(0)
+        else:
+            return None
+
+    def is_empty(self):
+        if len(self.q) == 0:
+            return True
+        else:
+            return False
+
+    def get_length(self):
+        return len(self.q)
+
 
 def BFS(adj_ls, start_node):
     """
     Breadth First Search
     """
     found_nodes = []
-    Q = queue()
+    Q = queue_b()
     visit(adj_ls, start_node)
     found_nodes.append(start_node)
-    while Q.is_empty() == False:
+    Q.enqueue(start_node)
+    while Q.get_length() != 0:
         w = Q.dequeue()
         for n in get_neighbors(adj_ls, w):
             if get_visited(adj_ls, n) == False:
                 visit(adj_ls, n)
                 found_nodes.append(n)
                 Q.enqueue(n)
-
-    for node in adj_ls:         #resets all the visited statuses in the adj_ls to False after the search is done so that it doesn't interfere with the next BFS
-        devisit(adj_ls, node)
-    
+    #IN MEMORIAM: 2 hours of debugging time spent on this function even though there was no bug in this function RIP
     return found_nodes
 
 
@@ -113,55 +136,12 @@ def find_largest_cc(adj_ls):
     """
     max_cc = []
     for node in adj_ls:
-        current_cc = BFS(adj_ls, node)
-        if len(current_cc) > len(max_cc):
-            max_cc = current_cc
+        if get_visited(adj_ls, node) == False:
+            current_cc = BFS(adj_ls, node)
+            if len(current_cc) > len(max_cc):
+                max_cc = current_cc
+    reset_visits(adj_ls)
     return max_cc
-
-
-class queue():                  #queue only for the purpose of implementing BFS
-    def __init__(self):
-        self.head = None
-        self.tail = None
-    
-    def enqueue(self, item):
-        new_item = LL_node(item)
-        if self.head == None:
-            self.head = new_item
-            self.tail = new_item
-        else:
-            self.tail.attach(new_item)
-            self.tail = new_item
-    
-    def dequeue(self):
-        if self.head == None:
-            return None
-        else:
-            ret = self.head.val
-            new_head = self.head.give_next()
-            self.head.detach()
-            self.head = new_head
-            return ret
-    
-    def is_empty(self):
-        if self.head == None:
-            return True
-        else:
-            return False
-
-class LL_node():                 #node only for the purpose of implementing the queue class
-    def __init__(self, val):
-        self.val = val
-        self.next = None
-        
-    def detach(self):
-        self.next = None
-    
-    def give_next(self):
-        return self.next
-    
-    def attach(self, next_node):
-        self.next = next_node
 
 
 
@@ -244,8 +224,10 @@ def get_degrees(adj_ls, lcc):
     return a dictionary whose keys are nodes in the lcc and whose values are the degree of the given node
     """
     degree_dict = {}
+    print("length of lcc is:",len(lcc))
     for node in lcc:
         degree_dict[node] = len(get_neighbors(adj_ls,node))
+    print(degree_dict)
     return degree_dict
 
 def get_degree_hist_data(degree_dict):
@@ -258,6 +240,7 @@ def get_degree_hist_data(degree_dict):
         if current_degree > max_degree:
             max_degree = current_degree
 
+    print("Max degree is",max_degree)
     ls = []
     for n in range(max_degree+1):
         ls.append(0)
@@ -286,6 +269,8 @@ def deg_hist_ls(adj_lists, lcc_ls):
     while i < len(adj_lists):
         degree_dict = get_degrees(adj_lists[i],lcc_ls[i])
         output = get_degree_hist_data(degree_dict)
+        print(output)
+        print(type(output))
         data_ls.append(output)
         i += 1
     return data_ls
@@ -370,15 +355,23 @@ def main():
 
     collins_lcc = find_largest_cc(collins_adj)
     y2h_lcc = find_largest_cc(y2h_adj)
-    lc_lcc = find_largest_cc(y2h_adj)
+    lc_lcc = find_largest_cc(lc_adj)
     ER_lcc = find_largest_cc(ER_adj)
     BA_lcc = find_largest_cc(BA_adj)
+    print("length of collins",len(collins_lcc))
+    print("length of y2h",len(y2h_lcc))
+    print("length of lc",len(lc_lcc))
+    print("length of ER",len(ER_lcc))
+    print("length of BA lcc is",len(BA_lcc))
     
 
     adj_lists = [collins_adj, y2h_adj, lc_adj, ER_adj, BA_adj]
     lcc_ls = [collins_lcc, y2h_lcc, lc_lcc, ER_lcc, BA_lcc]
     
     d_hist_data = deg_hist_ls(adj_lists, lcc_ls)
+
+    print(d_hist_data[0])
+    
     plot_deg_hist('test2',d_hist_data[0])
     
     plot_deg_dist('test')
