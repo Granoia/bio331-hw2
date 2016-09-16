@@ -184,7 +184,7 @@ def plot_deg_dist(prefix):
 def plot_DH_datasets(prefix,data_ls):
     fig = plt.figure(figsize=(6.5,4))
     i = 0
-    line_list = ['r-o','g-o','b-o','y-o','m-o','c-o']
+    line_list = ['ro','go','bo','yo','mo','co']
     logxs = []
     logys = []
     
