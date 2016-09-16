@@ -376,7 +376,7 @@ def plot_DH_dataset(prefix,data_ls,title_ls=None):
         yellow_patch = mpatches.Patch(color='yellow',label=title_ls[3])
         magenta_patch = mpatches.Patch(color='magenta',label=title_ls[4])
 
-    plt.legend(handles=[red_patch,green_patch,blue_patch,yellow_patch,magenta_patch])
+    plt.legend(handles=[red_patch,green_patch,blue_patch,yellow_patch,magenta_patch],prop={'size':6})
     
     plt.axis([0,10,-10,1])
     plt.xlabel('log(degree)')
