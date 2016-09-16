@@ -176,10 +176,11 @@ def get_degrees(adj_ls, lcc):
         degree_dict[node] = len(get_neighbors(adj_ls,node))
     return degree_dict
 
-def get_degree_hist_data(degree_dict):
+def get_degree_hist_data(adj_ls, lcc):
     """
     returns a list whose indices are node degrees and whose entries are the number of nodes with that degree
     """
+    degree_dict = get_degrees(adj_ls, lcc)
     max_degree = 0
     for node in degree_dict:
         current_degree = degree_dict[node]
@@ -213,8 +214,7 @@ def deg_hist_ls(adj_lists, lcc_ls):
     data_ls = []
     i = 0
     while i < len(adj_lists):
-        degree_dict = get_degrees(adj_lists[i],lcc_ls[i])
-        output = get_degree_hist_data(degree_dict)
+        output = get_degree_hist_data(adj_lists[i],lcc_ls[i])
         data_ls.append(output)
         i += 1
     return data_ls
@@ -302,13 +302,14 @@ def AND_plot_ls(adj_lists, lcc_ls):
 ###################################################################
 
 
-def plot_deg_dist(prefix):
+def plot_deg_hist(prefix,data):
     """
-    example function for plotting things
+    plots the degree histogram of a single dataset
+    The dataset for this function should be obtained using get_degree_hist_data()
     """
     fig = plt.figure(figsize=(6.5,4))
-    x = list(range(1,10))
-    y = [math.exp(-a) for a in x]
+    x = list(range(1,len(data)))
+    y = data[1:]
     logx = [math.log(a) for a in x]
     logy = []
     for b in y:
@@ -316,7 +317,8 @@ def plot_deg_dist(prefix):
             logy.append(0)
         else:
             logy.append(math.log(b))
-    
+
+
     plt.subplot(1,2,1)
     plt.plot(x,y,'o-r')
     plt.plot([0,8],[0,.3],'c--')
@@ -341,9 +343,9 @@ def plot_deg_dist(prefix):
 
 
 
-def plot_DH_datasets(prefix,data_ls):
+def plot_DH_dataset(prefix,data_ls,title_ls=None):
     """
-    plots each of the Degree Histogram datasets delivered in the data list
+    plots each of the Degree Histogram datasets delivered in the data list (see degree histogram functions for details)
     """
     fig = plt.figure(figsize=(6.5,4))
     i = 0
@@ -365,21 +367,31 @@ def plot_DH_datasets(prefix,data_ls):
         logys.append(logy)
         print(len(logx),len(logy))
 
-    #plt.plot(x,y,line_list[0])
-
     plt.plot(logxs[0],logys[0],line_list[0],logxs[1],logys[1],line_list[1],logxs[2],logys[2],line_list[2],logxs[3],logys[3],line_list[3],logxs[4],logys[4],line_list[4])
     
-    plt.axis([0,15,-10,1])
-    plt.xlabel('x')
-    plt.ylabel('y')
-    plt.title(prefix)
+    if title_ls != None:
+        red_patch = mpatches.Patch(color='red',label=title_ls[0])
+        green_patch = mpatches.Patch(color='green',label=title_ls[1])
+        blue_patch = mpatches.Patch(color='blue',label=title_ls[2])
+        yellow_patch = mpatches.Patch(color='yellow',label=title_ls[3])
+        magenta_patch = mpatches.Patch(color='magenta',label=title_ls[4])
+
+    plt.legend(handles=[red_patch,green_patch,blue_patch,yellow_patch,magenta_patch])
+    
+    plt.axis([0,10,-10,1])
+    plt.xlabel('log(degree)')
+    plt.ylabel('log(Probability a node has degree x)')
+    plt.title('Degree Histogram')
     plt.savefig(prefix+'.png')
     return
 
 
+
+
 def plot_AND_data(prefix,data,avg_data):
     """
-    test function for plotting the average neighbor degree of a single graph
+    plots the average neighbor degree of a single graph
+    the dataset for this function should be obtained using get_AND_plot_data()
     """
     fig = plt.figure(figsize=(6.5,4))
     x = list(range(1,len(data)))
@@ -399,7 +411,6 @@ def plot_AND_data(prefix,data,avg_data):
     plt.legend(handles=[red_patch,blue_patch])
     
     plt.savefig(prefix+'.png')
-
     return
 
 
@@ -424,7 +435,7 @@ def plot_AND_dataset(prefix, data_ls, avg_ls, title_ls=None):
         row.plot(avg_x,avg_y,'or')
         if title_ls != None:
             row.set_title(title_ls[i])
-        row.locator_params(nbins=6,axis='y')
+        row.locator_params(nbins=5,axis='y')
             
         i += 1
     
@@ -438,43 +449,6 @@ def plot_AND_dataset(prefix, data_ls, avg_ls, title_ls=None):
 
 
 
-def plot_deg_hist(prefix,data):
-    """
-    test function for plotting the degree histogram of a single dataset
-    """
-    fig = plt.figure(figsize=(6.5,4))
-    x = list(range(1,len(data)))
-    y = data[1:]
-    logx = [math.log(a) for a in x]
-    logy = []
-    for b in y:
-        if b == 0:
-            logy.append(0)
-        else:
-            logy.append(math.log(b))
-
-
-    plt.subplot(1,2,1)
-    plt.plot(x,y,'o-r')
-    plt.plot([0,8],[0,.3],'c--')
-    plt.axis([0,10,0,.4])
-    plt.xlabel('x')
-    plt.ylabel('y')
-    plt.title(prefix)
-    
-    plt.subplot(1,2,2)
-    plt.plot(logx,logy,'s-b')
-    plt.axis([-.1,2.5,-10,1])
-    plt.xlabel('log x')
-    plt.ylabel('log y')
-    plt.title(prefix+' (log)')
-    
-    plt.tight_layout()
-    
-    plt.savefig(prefix+'.png')
-    
-    print('wrote to '+prefix+'.png')
-    return
 
 
 
@@ -517,7 +491,7 @@ def main():
     d_hist_data = deg_hist_ls(adj_lists, lcc_ls)
     
     
-    #plot_DH_datasets('test3',d_hist_data)
+    plot_DH_dataset('test3',d_hist_data,title_ls)
 
     AND_data_ls = []
     avg_data_ls = []
@@ -526,14 +500,10 @@ def main():
         AND_data, avg = get_AND_plot_data(adj_lists[i],lcc_ls[i])
         AND_data_ls.append(AND_data)
         avg_data_ls.append(avg)
-    
-    BA_AND_data, BA_avgs = get_AND_plot_data(BA_adj, BA_lcc)
+
 
     plot_AND_dataset('test5', AND_data_ls, avg_data_ls, title_ls)
     
-    print(BA_avgs)
-
-    #plot_AND_data('test4', BA_AND_data, BA_avgs)
 
 if __name__ == '__main__':
     main()
