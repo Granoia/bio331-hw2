@@ -428,8 +428,8 @@ def plot_AND_dataset(prefix, data_ls, avg_ls, title_ls=None):
         i += 1
     
     fig.tight_layout()
-    fig.text(0.3,0.04,'Node Degree',ha='center')
-    fig.text(0.04,0.3,'Average Neighbor Degree',va='center', rotation='vertical')
+    fig.text(0.5,0.02,'Node Degree',ha='center')
+    fig.text(0.02,0.5,'Average Neighbor Degree',va='center', rotation='vertical')
 
     fig.savefig(prefix+'.png')
     return
@@ -536,7 +536,7 @@ def main():
     d_hist_data = deg_hist_ls(adj_lists, lcc_ls)
     
     
-    plot_DH_datasets('test3',d_hist_data)
+    #plot_DH_datasets('test3',d_hist_data)
 
     AND_data_ls = []
     avg_data_ls = []
@@ -552,7 +552,7 @@ def main():
     
     print(BA_avgs)
 
-    plot_AND_data('test4', BA_AND_data, BA_avgs)
+    #plot_AND_data('test4', BA_AND_data, BA_avgs)
 
 if __name__ == '__main__':
     main()
