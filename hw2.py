@@ -378,7 +378,7 @@ def plot_DH_dataset(prefix,data_ls,title_ls=None):
 
     plt.legend(handles=[red_patch,green_patch,blue_patch,yellow_patch,magenta_patch],prop={'size':6})
     
-    plt.axis([0,10,-10,1])
+    plt.axis([0,6,-8,1])
     plt.xlabel('log(degree)')
     plt.ylabel('log(Probability a node has degree x)')
     plt.title('Degree Histogram')
@@ -451,9 +451,21 @@ def plot_AND_dataset(prefix, data_ls, avg_ls, title_ls=None):
 
 
 
+########################################################################
+#one counting function that I ended up needing for the summary document#
+########################################################################
+
+def count_E(adj_ls, lcc):
+    E_set = set()
+    for node in lcc:
+        for neighbor in get_neighbors(adj_ls,node):
+            E_set.add(frozenset([node,neighbor]))
+    return len(E_set)
+
+
 
 #################################################################################
-#main() (put functions you want to execute in this block of code)################
+#main()##########################################################################
 #################################################################################
 
 
@@ -463,7 +475,12 @@ def main():
     lc_nodes, lc_edges = readData('LC_multiple.txt')
     ER_nodes, ER_edges = lab2.erdos_renyi(1500,3000)
     BA_nodes, BA_edges = lab2.barabasi_albert(1500,4,2)
-
+    print(len(collins_nodes),len(collins_edges))
+    print(len(y2h_nodes),len(y2h_edges))
+    print(len(lc_nodes),len(lc_edges))
+    print(len(ER_nodes),len(ER_edges))
+    print(len(BA_nodes),len(BA_edges))
+    
     
     collins_adj = make_adj_ls(collins_nodes, collins_edges)
     y2h_adj = make_adj_ls(y2h_nodes, y2h_edges)
@@ -477,11 +494,11 @@ def main():
     lc_lcc = find_largest_cc(lc_adj)
     ER_lcc = find_largest_cc(ER_adj)
     BA_lcc = find_largest_cc(BA_adj)
-    print("length of collins",len(collins_lcc))
-    print("length of y2h",len(y2h_lcc))
-    print("length of lc",len(lc_lcc))
-    print("length of ER",len(ER_lcc))
-    print("length of BA lcc is",len(BA_lcc))
+    print("length of collins lcc",len(collins_lcc),count_E(collins_adj,collins_lcc))
+    print("length of y2h lcc",len(y2h_lcc),count_E(y2h_adj,y2h_lcc))
+    print("length of lc lcc",len(lc_lcc),count_E(lc_adj,lc_lcc))
+    print("length of ER lcc",len(ER_lcc),count_E(ER_adj,ER_lcc))
+    print("length of BA lcc ",len(BA_lcc),count_E(BA_adj,BA_lcc))
     
     
     adj_lists = [collins_adj, y2h_adj, lc_adj, ER_adj, BA_adj]
