@@ -1,19 +1,14 @@
 import matplotlib
 matplotlib.use('Agg')
-
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
-import matplotlib.lines as mlines
-
 import numpy as np
-
 import math
 import pylab
-import lab2
 
-####################################
-#DATA READING FUNCTIONS#############
-####################################
+##############################################
+#DATA READING/SIMULATION FUNCTIONS############
+##############################################
 
 def readData(filename):
     """
@@ -54,8 +49,117 @@ def set_to_list(s):
     return ls
 
 
+def erdos_renyi(n,m,wantRank=False):
+    """
+    generates a graph (returned as a list of nodes and a list of edges) using the Erdos Renyi model.
+    also returns a rank_ls that gives the order in which the edges were generated.
+    """
+    V = []
+    E = []
+    rank_ls = []
+    ls = []
+    E_set = set()
+    for i in range(n):           #create nodes
+        V.append(str(i))
+
+    i = 0 
+    while i < m:
+        u = random.choice(V)
+        v = random.choice(V)
+        if u == v:
+            pass
+        elif frozenset([u,v]) in E_set:     #skips any already added edges or edges that go to self
+            pass
+        else:
+            E_set.add(frozenset([u,v]))
+            ls.append([frozenset([u,v]),i])
+            i += 1
+
+    for item in E_set:             #turns all the sets into lists and then appends them to E
+        E.append(set_to_ls(item))
+
+    for item in ls:                #lists each edge in the order that it was added
+        rank_ls.append([set_to_ls(item[0]),item[1]])   #creates a rank_ls that has entries with format [edge,k]
+                      
+    if wantRank == True:
+        return V, E, rank_ls
+    else:
+        return V, E
+    
+    
+    
+    
+def barabasi_albert(t,n0,m0,wantRank=False):
+    """
+    generates a graph (reeturned as a list of nodes and edges) using the barabasi_albert model.
+    t refers to the number of timesteps, n0 is the number of initial nodes, m0 is the number of edges added per timestep.
+    """
+    V = []
+    E_set = set()
+    p_deg = []      #keeps a list that gets updated such that: the number of copies of each node in p_deg is equal to its degree
+    E = []
+    ls = []
+    rank_ls = []
+    
+    #initializes the starting nodes such that they form a big cycle
+    for i in range(n0):
+        V.append(str(i))
+
+    for j in range(len(V)):
+        if j < len(V)-1:
+            E_set.add(frozenset([V[j],V[j+1]]))
+        else:
+            E_set.add(frozenset([V[j],V[0]]))
+
+    #initializes p_deg
+    for edge in E_set:
+        for node in edge:
+            p_deg.append(node)
+
+    #this loop generates a new node with each timestep and attaches it to two nodes selected with probability proportional to degree
+    i = 0
+    k = 2
+    i += n0
+    t += n0       #still goes through t timesteps, but this makes naming the new nodes easier
+    while i <= t:
+        new_node = str(i)
+        pick_set = BA_find(p_deg,m0)
+        for item in pick_set:
+            E_set.add(frozenset([new_node, item]))
+            ls.append([frozenset([new_node,item]), k])
+            p_deg += [new_node, item]
+            
+        V.append(new_node)
+        i += 1
+        k += 1
+
+    for item in E_set:
+        E.append(set_to_ls(item))
+
+    for item in ls:
+        rank_ls.append([set_to_ls(item[0]),item[1]])
+            
+    if wantRank == True:
+        return V, E, rank_ls
+    else:
+        return V, E
+
+def BA_find(p_deg,m0):
+    """
+    helper function that picks m0 unique nodes from p_deg and returns them as a set
+    since we choose randomly from p_deg, the probability we pick a node is proportional to its degree.
+    """
+    pick_set = set()
+    while len(pick_set) < m0:
+        pick_set.add(random.choice(p_deg))
+    return pick_set
 
 
+
+
+
+
+    
 ###################################################
 #GRAPH CREATION / NAVIGATION FUCTIONS##############
 ###################################################
