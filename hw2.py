@@ -314,7 +314,7 @@ def plot_deg_hist(prefix,data):
     logy = []
     for b in y:
         if b == 0:
-            logy.append(0)
+            logy.append(float('nan'))
         else:
             logy.append(math.log(b))
 
@@ -360,7 +360,7 @@ def plot_DH_dataset(prefix,data_ls,title_ls=None):
         logy = []
         for b in y:
             if b == 0:
-                logy.append(0)
+                logy.append(float('nan'))
             else:
                 logy.append(math.log(b))
         logxs.append(logx)
