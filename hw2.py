@@ -5,6 +5,7 @@ import matplotlib.patches as mpatches
 import numpy as np
 import math
 import pylab
+import random
 
 ##############################################
 #DATA READING/SIMULATION FUNCTIONS############
@@ -76,10 +77,10 @@ def erdos_renyi(n,m,wantRank=False):
             i += 1
 
     for item in E_set:             #turns all the sets into lists and then appends them to E
-        E.append(set_to_ls(item))
+        E.append(set_to_list(item))
 
     for item in ls:                #lists each edge in the order that it was added
-        rank_ls.append([set_to_ls(item[0]),item[1]])   #creates a rank_ls that has entries with format [edge,k]
+        rank_ls.append([set_to_list(item[0]),item[1]])   #creates a rank_ls that has entries with format [edge,k]
                       
     if wantRank == True:
         return V, E, rank_ls
@@ -134,10 +135,10 @@ def barabasi_albert(t,n0,m0,wantRank=False):
         k += 1
 
     for item in E_set:
-        E.append(set_to_ls(item))
+        E.append(set_to_list(item))
 
     for item in ls:
-        rank_ls.append([set_to_ls(item[0]),item[1]])
+        rank_ls.append([set_to_list(item[0]),item[1]])
             
     if wantRank == True:
         return V, E, rank_ls
@@ -577,8 +578,8 @@ def main():
     collins_nodes, collins_edges = readData('Collins.txt')
     y2h_nodes, y2h_edges = readData('Y2H_union.txt')
     lc_nodes, lc_edges = readData('LC_multiple.txt')
-    ER_nodes, ER_edges = lab2.erdos_renyi(1500,3000)
-    BA_nodes, BA_edges = lab2.barabasi_albert(1500,4,2)
+    ER_nodes, ER_edges = erdos_renyi(1500,3000)
+    BA_nodes, BA_edges = barabasi_albert(1500,4,2)
     print(len(collins_nodes),len(collins_edges))
     print(len(y2h_nodes),len(y2h_edges))
     print(len(lc_nodes),len(lc_edges))
